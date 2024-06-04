@@ -1,6 +1,7 @@
 // src/server.js
 const Hapi = require("@hapi/hapi");
-const AuthPlugin = require("./auth");
+const authRoutes = require('./auth');
+const appRoutes = require('./app');
 
 const init = async () => {
   const server = Hapi.server({
@@ -13,7 +14,8 @@ const init = async () => {
     },
   });
 
-  await server.register(AuthPlugin);
+  await server.register(authRoutes);
+  await server.register(appRoutes);
 
   await server.start();
   console.log("Server running on %s", server.info.uri);
