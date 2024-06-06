@@ -1,11 +1,10 @@
-// src/server.js
 const Hapi = require("@hapi/hapi");
 const authRoutes = require('./auth');
 const appRoutes = require('./app');
 
 const init = async () => {
   const server = Hapi.server({
-    port: 3000,
+    port: process.env.PORT || 8080,
     host: '0.0.0.0',
     routes: {
       cors: {
@@ -18,7 +17,7 @@ const init = async () => {
   await server.register(appRoutes);
 
   await server.start();
-  console.log("Server running on %s", server.info.uri);
+  console.log(`Server running on ${server.info.uri}`);
 };
 
 process.on("unhandledRejection", (err) => {
@@ -26,4 +25,5 @@ process.on("unhandledRejection", (err) => {
   process.exit(1);
 });
 
-init();
+init().then(() => console.log('Server initialized successfully'))
+       .catch(err => console.error('Server initialization failed:', err));
