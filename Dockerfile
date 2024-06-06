@@ -1,15 +1,23 @@
+# Node.js image sebagai base image
 FROM node:18
 
+# Workdirectory
 WORKDIR /usr/src/app
 
+# Salin file package.json
 COPY package*.json ./
 
+# Instal dependensi aplikasi
 RUN npm install
 
+# Salin seluruh kode aplikasi
 COPY . .
 
-COPY .env .env
+# Ekspose port yang digunakan oleh aplikasi
+EXPOSE 8080
 
-EXPOSE 3000
+# Set environment variables
+ENV PORT 8080
 
+# Perintah untuk menjalankan aplikasi
 CMD ["node", "src/server.js"]
