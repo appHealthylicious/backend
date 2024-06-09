@@ -1,4 +1,3 @@
-// src/auth/route.js
 const handler = require("./handler");
 
 module.exports = [
@@ -11,5 +10,10 @@ module.exports = [
     method: "POST",
     path: "/login",
     handler: handler.login,
+  },
+  {
+    method: "POST",
+    path: "/login/google",
+    handler: handler.loginWithGoogle,
   },
 ];
