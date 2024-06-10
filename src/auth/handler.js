@@ -1,10 +1,15 @@
 const firebaseAdmin = require("../utils/firebase");
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
+const { sendResetPasswordEmail } = require('../utils/nodemailer');
+const crypto = require('crypto');
 
 // Signature Token
 const secretKey = process.env.JWT_SECRET;
 const apiKey = process.env.FIREBASE_API_KEY;
+
+// Simpan token temporary
+const resetTokens = {};
 
 const verifyPassword = async (email, password) => {
   const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`;
@@ -66,6 +71,19 @@ const loginWithGoogle = async (request, h) => {
     const decodedToken = await firebaseAdmin.auth().verifyIdToken(idToken);
     const uid = decodedToken.uid;
 
+    // Cek database apakah user terdaftar
+    const db = firebaseAdmin.database();
+    const userRef = db.ref('users/' + uid);
+    const snapshot = await userRef.once('value');
+    
+    if (!snapshot.exists()) {
+      await userRef.set({
+        email: decodedToken.email,
+        name: decodedToken.name,
+        picture: decodedToken.picture || ''
+      });
+    }
+
     const token = jwt.sign({ uid }, secretKey, { expiresIn: '1h' });
 
     return h.response({ message: "Login with Google successful", token, uid }).code(200);
@@ -75,4 +93,55 @@ const loginWithGoogle = async (request, h) => {
   }
 };
 
-module.exports = { register, login, loginWithGoogle };
+const requestPasswordReset = async (request, h) => {
+  const { email } = request.payload;
+
+  try {
+    const userRecord = await firebaseAdmin.auth().getUserByEmail(email);
+
+    // Buat token reset password
+    const token = crypto.randomBytes(32).toString('hex');
+    const tokenExpiration = Date.now() + 3600000; // Token berlaku selama 1 jam
+
+    // Simpan token dan waktu kadaluarsa di database atau in-memory store
+    resetTokens[userRecord.uid] = { token, tokenExpiration };
+
+    // Kirim email reset password
+    await sendResetPasswordEmail(email, token);
+
+    return h.response({ message: 'Password reset email sent' }).code(200);
+  } catch (error) {
+    console.error(`Error sending reset password email: ${error.message}`);
+    return h.response({ error: error.message }).code(500);
+  }
+};
+
+const resetPassword = async (request, h) => {
+  const { token, newPassword } = request.payload;
+
+  try {
+    // Cari token di database atau in-memory store
+    const uid = Object.keys(resetTokens).find(uid => resetTokens[uid].token === token);
+    if (!uid) {
+      return h.response({ error: 'Invalid or expired token' }).code(400);
+    }
+
+    const { tokenExpiration } = resetTokens[uid];
+    if (Date.now() > tokenExpiration) {
+      return h.response({ error: 'Token expired' }).code(400);
+    }
+
+    // Atur ulang password
+    await firebaseAdmin.auth().updateUser(uid, { password: newPassword });
+
+    // Hapus token setelah digunakan
+    delete resetTokens[uid];
+
+    return h.response({ message: 'Password reset successful' }).code(200);
+  } catch (error) {
+    console.error(`Error resetting password: ${error.message}`);
+    return h.response({ error: error.message }).code(500);
+  }
+};
+
+module.exports = { register, login, loginWithGoogle, requestPasswordReset, resetPassword };

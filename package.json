@@ -14,11 +14,12 @@
   "dependencies": {
     "@hapi/hapi": "^21.3.9",
     "axios": "^1.7.2",
-    "bcrypt": "^5.1.1",
+    "crypto": "^1.0.1",
     "dotenv": "^16.4.5",
     "firebase-admin": "^12.1.1",
     "hapi-auth-basic": "^5.0.0",
     "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.13",
     "uuid": "^9.0.1"
   },
   "devDependencies": {

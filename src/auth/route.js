@@ -16,4 +16,14 @@ module.exports = [
     path: "/login/google",
     handler: handler.loginWithGoogle,
   },
+  {
+    method: "POST",
+    path: "/request-password-reset",
+    handler: handler.requestPasswordReset,
+  },
+  {
+    method: "POST",
+    path: "/reset-password",
+    handler: handler.resetPassword,
+  },
 ];
