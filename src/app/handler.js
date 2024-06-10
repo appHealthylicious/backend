@@ -20,7 +20,7 @@ const addUserProfile = async (request, h) => {
     return h.response({ message: "User profile added successfully" }).code(201);
   } catch (error) {
     console.error(`Add user profile error: ${error.code} - ${error.message}`);
-    console.error(error);  // Log the full error
+    console.error(error);  // Log full error
     return h.response({ error: error.message }).code(500);
   }
 };
@@ -44,7 +44,7 @@ const updateUserProfile = async (request, h) => {
     return h.response({ message: "User profile updated successfully" }).code(200);
   } catch (error) {
     console.error(`Update user profile error: ${error.code} - ${error.message}`);
-    console.error(error);  // Log the full error
+    console.error(error);  // Log full error
     return h.response({ error: error.message }).code(500);
   }
 };
@@ -52,6 +52,11 @@ const updateUserProfile = async (request, h) => {
 const getUserProfile = async (request, h) => {
   try {
     const { uid } = request.params;
+
+    // Verifikasi UID dari token cocok dengan UID di URL
+    if (uid !== request.auth.uid) {
+      return h.response({ error: "Unauthorized access to user profile" }).code(403);
+    }
 
     const db = firebaseAdmin.database();
     console.log('Attempting to get user profile for UID:', uid);
@@ -68,7 +73,7 @@ const getUserProfile = async (request, h) => {
     }
   } catch (error) {
     console.error(`Get user profile error: ${error.code} - ${error.message}`);
-    console.error(error);  // Log the full error object for more details
+    console.error(error);  // Log full error
     return h.response({ error: error.message }).code(500);
   }
 };
