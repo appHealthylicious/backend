@@ -1,5 +1,5 @@
 // src/dislike/route.js
-const handler = require('./Handler');
+const handler = require('./handler');
 const verifyToken = require('../middleware/auth');
 
 module.exports = [
