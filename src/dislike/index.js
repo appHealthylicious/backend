@@ -1,5 +1,5 @@
 // src/dislike/index.js
-const routes = require('./route');
+const routes = require('./Route');
 
 module.exports = {
   name: 'dislike',
