@@ -2,13 +2,14 @@ require('dotenv').config();
 const Hapi = require("@hapi/hapi");
 const authRoutes = require('./auth');
 const appRoutes = require('./app');
+const searchPlugin = require('./search'); 
 const dislikePlugin = require('./dislike');
 const { initializeIngredients } = require('./services/ingredientService');
 
 const init = async () => {
   const server = Hapi.server({
-    port: process.env.PORT || 8080,
-    host: '0.0.0.0',
+    port: process.env.PORT || 3000,
+    host: 'localhost',
     routes: {
       cors: {
         origin: ['*'],
@@ -18,6 +19,7 @@ const init = async () => {
 
   await server.register(authRoutes);
   await server.register(appRoutes);
+  await server.register(searchPlugin); 
   await server.register(dislikePlugin); 
 
   initializeIngredients();
