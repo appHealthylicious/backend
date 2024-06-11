@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendResetPasswordEmail = async (email, token) => {
-  const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+  const resetLink = `https://healthylicious-backend-z5ldsdy5xq-et.a.run.app/reset-password?token=${token}`;
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
