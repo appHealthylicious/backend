@@ -2,6 +2,8 @@ require('dotenv').config();
 const Hapi = require("@hapi/hapi");
 const authRoutes = require('./auth');
 const appRoutes = require('./app');
+const dislikePlugin = require('./dislike');
+const { initializeIngredients } = require('./services/ingredientService');
 
 const init = async () => {
   const server = Hapi.server({
@@ -16,6 +18,9 @@ const init = async () => {
 
   await server.register(authRoutes);
   await server.register(appRoutes);
+  await server.register(dislikePlugin); 
+
+  initializeIngredients();
 
   await server.start();
   console.log(`Server running on ${server.info.uri}`);
