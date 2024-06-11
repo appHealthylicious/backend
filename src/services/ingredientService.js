@@ -25,11 +25,24 @@ const getIngredients = () => {
 };
 
 const searchIngredients = (query) => {
-  return ingredients.filter(ingredient => 
-    ingredient.Ingredient.toLowerCase().includes(query.toLowerCase())
-  );
+  const cleanedQuery = query.toLowerCase();
+  return ingredients
+    .map(ingredient => ingredient.Ingredient)
+    .filter(name => name.toLowerCase().includes(cleanedQuery))
+    .sort((a, b) => {
+      const aLower = a.toLowerCase();
+      const bLower = b.toLowerCase();
+      const aStartsWith = aLower.startsWith(cleanedQuery);
+      const bStartsWith = bLower.startsWith(cleanedQuery);
+
+      if (aStartsWith && !bStartsWith) return -1;
+      if (!aStartsWith && bStartsWith) return 1;
+
+      return a.length - b.length;
+    });
 };
 
 module.exports = { initializeIngredients, getIngredients, searchIngredients };
+
 
 
