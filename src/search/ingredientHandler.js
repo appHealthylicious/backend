@@ -1,3 +1,4 @@
+// src/search/ingredientHandler.js
 const { getIngredients, searchIngredients, categorizeIngredients } = require('../services/ingredientService');
 
 const getAllIngredients = async (request, h) => {

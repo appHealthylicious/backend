@@ -1,5 +1,5 @@
-// src/search/route.js
-const handler = require('./handler');
+// src/search/ingredeintRoute.js
+const handler = require('./ingredientHandler');
 
 module.exports = [
   {
