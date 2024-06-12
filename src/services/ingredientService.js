@@ -1,7 +1,7 @@
-// src/services/ingredientService.js
 const fs = require('fs');
 const path = require('path');
 const csv = require('csv-parser');
+const categories = require('./ingredientCategories');
 
 let ingredients = [];
 
@@ -16,12 +16,49 @@ const loadIngredients = () => {
     });
 };
 
+// Panggil fungsi ini saat aplikasi dimulai
 const initializeIngredients = () => {
   loadIngredients();
 };
 
 const getIngredients = () => {
   return ingredients;
+};
+
+const categorizeIngredients = () => {
+  const categorized = {
+    vegetables: [],
+    fruits: [],
+    dairy: [],
+    spices: [],
+    meat: [],
+    seafood: [],
+    grains: [],
+    other: []
+  };
+
+  for (const ingredient of ingredients) {
+    const name = ingredient.Ingredient.toLowerCase();
+    if (categories.vegetables.includes(name)) {
+      categorized.vegetables.push(name);
+    } else if (categories.fruits.includes(name)) {
+      categorized.fruits.push(name);
+    } else if (categories.dairy.includes(name)) {
+      categorized.dairy.push(name);
+    } else if (categories.spices.includes(name)) {
+      categorized.spices.push(name);
+    } else if (categories.meat.includes(name)) {
+      categorized.meat.push(name);
+    } else if (categories.seafood.includes(name)) {
+      categorized.seafood.push(name);
+    } else if (categories.grains.includes(name)) {
+      categorized.grains.push(name);
+    } else {
+      categorized.other.push(name);
+    }
+  }
+
+  return categorized;
 };
 
 const searchIngredients = (query) => {
@@ -42,7 +79,4 @@ const searchIngredients = (query) => {
     });
 };
 
-module.exports = { initializeIngredients, getIngredients, searchIngredients };
-
-
-
+module.exports = { initializeIngredients, getIngredients, searchIngredients, categorizeIngredients };
