@@ -16,7 +16,6 @@ const loadIngredients = () => {
     });
 };
 
-// Panggil fungsi ini saat aplikasi dimulai
 const initializeIngredients = () => {
   loadIngredients();
 };
