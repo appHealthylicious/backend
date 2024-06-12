@@ -4,13 +4,15 @@ const authRoutes = require('./auth');
 const appRoutes = require('./app');
 const searchPlugin = require('./search'); 
 const dislikePlugin = require('./dislike');
+const recommendationRoutes = require('./recommendation');
 const { initializeIngredients } = require('./services/ingredientService');
 const { initializeRecipes } = require('./services/recipeService');
+const { loadRecipeData } = require('./services/recommendationService');
 
 const init = async () => {
   const server = Hapi.server({
-    port: process.env.PORT || 8080,
-    host: '0.0.0.0',
+    port: process.env.PORT || 3000,
+    host: 'localhost',
     routes: {
       cors: {
         origin: ['*'],
@@ -22,9 +24,11 @@ const init = async () => {
   await server.register(appRoutes);
   await server.register(searchPlugin); 
   await server.register(dislikePlugin); 
+  await server.register(recommendationRoutes);
 
   initializeIngredients();
   initializeRecipes();
+  loadRecipeData();
 
   await server.start();
   console.log(`Server running on ${server.info.uri}`);
