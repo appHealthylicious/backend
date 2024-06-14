@@ -3,6 +3,7 @@ const path = require('path');
 
 let recipeData = [];
 
+// Muat data resep dari file JSON
 const loadRecipeData = () => {
   fs.readFile(path.join(__dirname, '../../models/recipesData.json'), 'utf8', (err, data) => {
     if (err) {
@@ -14,8 +15,10 @@ const loadRecipeData = () => {
   });
 };
 
+// Panggil fungsi ini saat aplikasi dimulai
 loadRecipeData();
 
+// Fungsi untuk mendapatkan rekomendasi berdasarkan kategori
 const getRecommendations = (categories, limit = 5) => {
   const recommendations = {};
 

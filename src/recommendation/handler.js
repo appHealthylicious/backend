@@ -3,16 +3,26 @@ const { getRecommendations } = require('../services/recommendationService');
 const getRecommendationHandler = async (request, h) => {
   const categories = ['breakfast', 'lunch', 'dinner', 'dessert', 'snack'];
   const recommendations = getRecommendations(categories);
-  
-  // Filter hanya untuk title dan image
+
+  const uniqueRecipes = new Set();
   const filteredRecommendations = {};
-  for (const category in recommendations) {
-    filteredRecommendations[category] = recommendations[category].map(recipe => ({
-      title: recipe.title,
-      image: recipe.image
-    }));
+
+  for (const category of categories) {
+    filteredRecommendations[category] = recommendations[category]
+      .filter(recipe => {
+        if (uniqueRecipes.has(recipe.title)) {
+          return false;
+        } else {
+          uniqueRecipes.add(recipe.title);
+          return true;
+        }
+      })
+      .map(recipe => ({
+        title: recipe.title,
+        image: recipe.image
+      }));
   }
-  
+
   return h.response(filteredRecommendations).code(200);
 };
 
