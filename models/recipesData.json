@@ -54422,60 +54422,6 @@
         "image": "https://addapinch.com/wp-content/uploads/2010/10/gravy-8-602x399-1.jpg"
     },
     {
-        "title": "Swedish Meatballs Recipe",
-        "ingredient_groups": [
-            {
-                "ingredients": [
-                    "1 pound ground beef",
-                    "2 tablespoons diced onion",
-                    "1 large egg",
-                    "1 1/2 teaspoons Stone House Seasoning",
-                    "1/4 teaspoon ground allspice (optional)",
-                    "1/4 teaspoon ground nutmeg (optional)",
-                    "2 tablespoons bread or cracker crumbs",
-                    "2 tablespoons chopped fresh parsley",
-                    "olive oil"
-                ],
-                "purpose": "For the meatballs:"
-            },
-            {
-                "ingredients": [
-                    "2 tablespoons butter",
-                    "3 tablespoons all-purpose flour",
-                    "2 cups beef stock or broth",
-                    "1 cup whole milk or heavy cream",
-                    "1 teaspoon Stone House Seasoning",
-                    "2 teaspoons Worcestershire sauce",
-                    "2 tablespoons chopped fresh parsley (optional)"
-                ],
-                "purpose": "For the sauce:"
-            }
-        ],
-        "instructions_list": [
-            "For the meatballs:",
-            "Mix together all ingredients for the meatballs. Set aside.",
-            "Using a tablespoon scoop or spoon, form meatballs from the ground beef mixture. Heat 12-inch skillet or saute pan over medium heat. Drizzle in enough olive oil to lightly coat the bottom of the skillet to prevent meatballs from sticking. Drop formed meatballs into the heated skillet, turning occasionally to ensure that all sides of the meatball have been browned, about 7-10 minutes. The meatballs should reach an internal temperature of 165\u00ba F. Remove the meatballs from the skillet or saute pan and drain on a plate lined with paper towels.",
-            "For the sauce:",
-            "Reduce the heat on the skillet or saute pan to medium-low heat. Melt butter and whisk in flour until it has turned golden brown. Slowly whisk in beef broth and cook until thickened, then add in milk or cream, worcestershire sauce, pepper, and salt. Continue to stir until well-combined. Add meatballs back into the skillet, turning to coat well. Add fresh parsley, if using."
-        ],
-        "category": "Main Course",
-        "yields": "6 servings",
-        "description": "The Best Swedish Meatballs feature tender meatballs in a rich, creamy sauce! These savory meatballs are ready in 30 minutes for a delicious dinner or satisfying appetizer!",
-        "total_time": 30,
-        "nutrients": {
-            "calories": "220 kcal",
-            "carbohydrateContent": "8 g",
-            "proteinContent": "20 g",
-            "fatContent": "11 g",
-            "saturatedFatContent": "5 g",
-            "cholesterolContent": "91 mg",
-            "sodiumContent": "1054 mg",
-            "sugarContent": "2 g",
-            "servingSize": "1 serving"
-        },
-        "image": "https://addapinch.com/wp-content/uploads/2022/10/swedish-meatballs-recipe_14.jpg"
-    },
-    {
         "title": "Baked Crispy Buffalo Chicken Wings Recipe",
         "ingredient_groups": [
             {
