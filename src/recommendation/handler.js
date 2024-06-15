@@ -1,7 +1,7 @@
 const { getRecommendations } = require('../services/recommendationService');
 
 const getRecommendationHandler = async (request, h) => {
-  const categories = ['easy_to_make', 'quick_to_cook','breakfast','dessert', 'snack'];
+  const categories = ['Easy to Make', 'Quick to Cook','Breakfast','Dessert', 'Snack'];
   const recommendations = getRecommendations(categories);
 
   const uniqueRecipes = new Set();
