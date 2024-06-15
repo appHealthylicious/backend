@@ -28,6 +28,19 @@ const getRecommendations = (categories, limit = 5) => {
       .slice(0, limit);
   });
 
+  // Tambahkan kategori "Easy to Make"
+  recommendations["easy_to_make"] = recipeData
+    .filter(recipe => {
+      const totalIngredients = recipe.ingredient_groups.reduce((count, group) => count + group.ingredients.length, 0);
+      return totalIngredients < 7;
+    })
+    .slice(0, limit);
+
+  // Tambahkan kategori "Quick to Cook"
+  recommendations["quick_to_cook"] = recipeData
+    .filter(recipe => recipe.total_time < 30)
+    .slice(0, limit);
+
   return recommendations;
 };
 
