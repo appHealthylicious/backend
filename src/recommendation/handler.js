@@ -5,10 +5,10 @@ const getRecommendationHandler = async (request, h) => {
   const recommendations = getRecommendations(categories);
 
   const uniqueRecipes = new Set();
-  const filteredRecommendations = {};
+  const filteredRecommendations = [];
 
   for (const category of categories) {
-    filteredRecommendations[category] = recommendations[category]
+    const filteredCategory = recommendations[category]
       .filter(recipe => {
         if (uniqueRecipes.has(recipe.title)) {
           return false;
@@ -21,9 +21,14 @@ const getRecommendationHandler = async (request, h) => {
         title: recipe.title,
         image: recipe.image
       }));
+    
+    filteredRecommendations.push({
+      category: category,
+      recipes: filteredCategory
+    });
   }
 
-  return h.response(filteredRecommendations).code(200);
+  return h.response({ recommendation: filteredRecommendations }).code(200);
 };
 
 module.exports = { getRecommendationHandler };
