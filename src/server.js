@@ -5,6 +5,7 @@ const appRoutes = require('./app');
 const searchPlugin = require('./search'); 
 const dislikePlugin = require('./dislike');
 const recommendationRoutes = require('./recommendation');
+const mlRoutes = require('./ml');
 const { initializeIngredients } = require('./services/ingredientService');
 const { initializeRecipes } = require('./services/recipeService');
 const { loadRecipeData } = require('./services/recommendationService');
@@ -25,6 +26,7 @@ const init = async () => {
   await server.register(searchPlugin); 
   await server.register(dislikePlugin); 
   await server.register(recommendationRoutes);
+  await server.register(mlRoutes);
 
   initializeIngredients();
   initializeRecipes();
