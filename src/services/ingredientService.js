@@ -1,3 +1,4 @@
+// src/services/ingredientService.js
 const fs = require('fs');
 const path = require('path');
 const csv = require('csv-parser');
@@ -33,6 +34,7 @@ const categorizeIngredients = () => {
     meat: [],
     seafood: [],
     grains: [],
+    sauces: [],
     other: []
   };
 
@@ -52,6 +54,8 @@ const categorizeIngredients = () => {
       categorized.seafood.push(name);
     } else if (categories.grains.includes(name)) {
       categorized.grains.push(name);
+    } else if (categories.sauces.includes(name)) {
+      categorized.sauces.push(name);
     } else {
       categorized.other.push(name);
     }

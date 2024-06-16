@@ -1,10 +1,18 @@
 // src/search/ingredientHandler.js
 const { getIngredients, searchIngredients, categorizeIngredients } = require('../services/ingredientService');
 
+const formatGroupedIngredients = (groupedIngredients) => {
+  return Object.keys(groupedIngredients).map(category => ({
+    category,
+    items: groupedIngredients[category]
+  }));
+};
+
 const getAllIngredients = async (request, h) => {
   const ingredients = getIngredients();
   const groupedIngredients = categorizeIngredients();
-  return h.response(groupedIngredients).code(200);
+  const formattedGroupedIngredients = formatGroupedIngredients(groupedIngredients);
+  return h.response(formattedGroupedIngredients).code(200);
 };
 
 const searchAllIngredients = async (request, h) => {
