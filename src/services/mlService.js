@@ -47,7 +47,8 @@ const getPopularRecipes = async (recipes, n = 10) => {
     rating_count: ratingsDf[recipeId].count
   }));
 
-  recipeStats.sort((a, b) => b.rating_count - a.rating_count || b.mean_rating - a.mean_rating);
+  // Sort by mean_rating in descending order, then by rating_count in descending order
+  recipeStats.sort((a, b) => b.mean_rating - a.mean_rating || b.rating_count - a.rating_count);
 
   return recipeStats.slice(0, n).map(({ recipeId }) => {
     const recipe = recipes.find(r => r.recipeId === recipeId);
