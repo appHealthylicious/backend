@@ -18,6 +18,48 @@ const loadCSV = (filePath) => {
   });
 };
 
+const getPopularRecipes = async (recipes, n = 10) => {
+  const ratingsSnapshot = await db.ref('users').once('value');
+  const allRatings = [];
+  ratingsSnapshot.forEach(userSnapshot => {
+    const userRatings = userSnapshot.child('ratings').val();
+    if (userRatings) {
+      Object.entries(userRatings).forEach(([recipeId, rating]) => {
+        allRatings.push({ recipeId, rating });
+      });
+    }
+  });
+
+  if (allRatings.length === 0) {
+    throw new Error('No ratings available to calculate popular recipes.');
+  }
+
+  const ratingsDf = allRatings.reduce((acc, { recipeId, rating }) => {
+    acc[recipeId] = acc[recipeId] || { total: 0, count: 0 };
+    acc[recipeId].total += rating;
+    acc[recipeId].count += 1;
+    return acc;
+  }, {});
+
+  const recipeStats = Object.keys(ratingsDf).map(recipeId => ({
+    recipeId,
+    mean_rating: ratingsDf[recipeId].total / ratingsDf[recipeId].count,
+    rating_count: ratingsDf[recipeId].count
+  }));
+
+  recipeStats.sort((a, b) => b.rating_count - a.rating_count || b.mean_rating - a.mean_rating);
+
+  return recipeStats.slice(0, n).map(({ recipeId }) => {
+    const recipe = recipes.find(r => r.recipeId === recipeId);
+    return {
+      recipeId: recipe.recipeId,
+      title: recipe.Title,
+      mean_rating: ratingsDf[recipe.recipeId].total / ratingsDf[recipe.recipeId].count,
+      rating_count: ratingsDf[recipe.recipeId].count
+    };
+  });
+};
+
 const getRecommendations = async (userId) => {
   try {
     const recipesPath = path.join(__dirname, '../../models/recipes_dataset.csv');
@@ -29,7 +71,8 @@ const getRecommendations = async (userId) => {
     const userRatings = userRatingsSnapshot.val();
 
     if (!userRatings) {
-      throw new Error('No ratings found for this user.');
+      console.log(`No ratings found for user ${userId}. Showing popular recipes.`);
+      return await getPopularRecipes(recipes);
     }
 
     const tfidf = new natural.TfIdf();
