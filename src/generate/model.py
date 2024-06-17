@@ -89,7 +89,8 @@ def generate_recommendations(useringreds):
     for index in indices[:5]:
         recommendations.append({
             "title": df.iloc[index].Title,
-            "ingredients": df.iloc[index]["All Ingredients"]
+            "ingredients": df.iloc[index]["All Ingredients"],
+            "image": df.iloc[index].Image
         })
 
     return recommendations
