@@ -3,9 +3,7 @@ const fs = require('fs');
 const csv = require('csv-parser');
 const natural = require('natural');
 const cosineSimilarity = require('compute-cosine-similarity');
-const firebaseAdmin = require('../utils/firebase');
-
-const db = firebaseAdmin.database();
+const firebaseAdmin = require('../utils/firebase'); // Import firebaseAdmin from Firebase initialization
 
 const loadCSV = (filePath) => {
   return new Promise((resolve, reject) => {
@@ -18,47 +16,41 @@ const loadCSV = (filePath) => {
   });
 };
 
-const getPopularRecipes = async (recipes, n = 10) => {
-  const ratingsSnapshot = await db.ref('users').once('value');
-  const allRatings = [];
-  ratingsSnapshot.forEach(userSnapshot => {
-    const userRatings = userSnapshot.child('ratings').val();
-    if (userRatings) {
-      Object.entries(userRatings).forEach(([recipeId, rating]) => {
-        allRatings.push({ recipeId, rating });
-      });
-    }
+const getPopularRecipes = async (recipes) => {
+  const ratingsSnapshot = await firebaseAdmin.database().ref('ratings').once('value');
+  const ratings = ratingsSnapshot.val() || {};
+
+  const recipeStats = {};
+  Object.keys(ratings).forEach(userId => {
+    Object.keys(ratings[userId]).forEach(recipeId => {
+      if (!recipeStats[recipeId]) {
+        recipeStats[recipeId] = { sum: 0, count: 0 };
+      }
+      recipeStats[recipeId].sum += ratings[userId][recipeId];
+      recipeStats[recipeId].count += 1;
+    });
   });
 
-  if (allRatings.length === 0) {
-    throw new Error('No ratings available to calculate popular recipes.');
-  }
+  const popularRecipes = Object.keys(recipeStats)
+    .map(recipeId => {
+      const { sum, count } = recipeStats[recipeId];
+      const mean_rating = sum / count;
+      return {
+        recipeId,
+        mean_rating,
+        rating_count: count,
+        ...recipes.find(recipe => recipe.recipeId === recipeId)
+      };
+    })
+    .sort((a, b) => b.mean_rating - a.mean_rating)
+    .slice(0, 10);
 
-  const ratingsDf = allRatings.reduce((acc, { recipeId, rating }) => {
-    acc[recipeId] = acc[recipeId] || { total: 0, count: 0 };
-    acc[recipeId].total += rating;
-    acc[recipeId].count += 1;
-    return acc;
-  }, {});
-
-  const recipeStats = Object.keys(ratingsDf).map(recipeId => ({
-    recipeId,
-    mean_rating: ratingsDf[recipeId].total / ratingsDf[recipeId].count,
-    rating_count: ratingsDf[recipeId].count
+  return popularRecipes.map(recipe => ({
+    recipeId: recipe.recipeId,
+    title: recipe.Title,
+    mean_rating: recipe.mean_rating,
+    rating_count: recipe.rating_count
   }));
-
-  // Sort by mean_rating in descending order, then by rating_count in descending order
-  recipeStats.sort((a, b) => b.mean_rating - a.mean_rating || b.rating_count - a.rating_count);
-
-  return recipeStats.slice(0, n).map(({ recipeId }) => {
-    const recipe = recipes.find(r => r.recipeId === recipeId);
-    return {
-      recipeId: recipe.recipeId,
-      title: recipe.Title,
-      mean_rating: ratingsDf[recipe.recipeId].total / ratingsDf[recipe.recipeId].count,
-      rating_count: ratingsDf[recipe.recipeId].count
-    };
-  });
 };
 
 const getRecommendations = async (userId) => {
@@ -66,12 +58,19 @@ const getRecommendations = async (userId) => {
     const recipesPath = path.join(__dirname, '../../models/recipes_dataset.csv');
     const recipes = await loadCSV(recipesPath);
 
-    // Ambil data rating pengguna dari Firebase
-    const userRatingsRef = db.ref(`users/${userId}/ratings`);
-    const userRatingsSnapshot = await userRatingsRef.once('value');
-    const userRatings = userRatingsSnapshot.val();
+    const userRef = firebaseAdmin.database().ref(`users/${userId}`);
+    const userSnapshot = await userRef.once('value');
+    const userData = userSnapshot.val();
 
-    if (!userRatings) {
+    if (!userData) {
+      console.log(`No user data found for user ${userId}. Showing popular recipes.`);
+      return await getPopularRecipes(recipes);
+    }
+
+    const userRatings = userData.ratings || {};
+    const dislikedIngredients = userData.dislikedIngredients || [];
+
+    if (!userRatings || Object.keys(userRatings).length === 0) {
       console.log(`No ratings found for user ${userId}. Showing popular recipes.`);
       return await getPopularRecipes(recipes);
     }
@@ -115,14 +114,24 @@ const getRecommendations = async (userId) => {
       .sort((a, b) => b.similarity - a.similarity)
       .slice(0, 10);
 
-    const recommendations = topK.map(({ index }) => {
-      const recipe = recipes[index];
-      return {
-        recipeId: recipe.recipeId,
-        title: recipe.Title,
-        similarity: similarities[index]
-      };
-    });
+    const recommendations = topK
+      .map(({ index }) => {
+        const recipe = recipes[index];
+        return {
+          recipeId: recipe.recipeId,
+          title: recipe.Title,
+          similarity: similarities[index]
+        };
+      })
+      .filter(recipe => {
+        const recipeIngredients = recipes[recipeIndex[recipe.recipeId]].Ingredients.toLowerCase();
+        return !dislikedIngredients.some(ingredient => recipeIngredients.includes(ingredient.toLowerCase()));
+      });
+
+    if (recommendations.length === 0) {
+      console.log(`No recommendations left after filtering for user ${userId}. Showing popular recipes.`);
+      return await getPopularRecipes(recipes);
+    }
 
     return recommendations;
   } catch (error) {
@@ -133,15 +142,14 @@ const getRecommendations = async (userId) => {
 
 const addRating = async (userId, recipeId, rating) => {
   try {
-    const userRef = db.ref(`users/${userId}/ratings/${recipeId}`);
-    await userRef.set(rating);
-
-    // Update recommendations
-    return await getRecommendations(userId);
+    const ratingRef = firebaseAdmin.database().ref(`users/${userId}/ratings/${recipeId}`);
+    await ratingRef.set(rating);
+    console.log(`Rating added for user ID ${userId}, recipe ID ${recipeId}, rating ${rating}`);
   } catch (error) {
-    console.error(`Error adding rating for user ID ${userId}:`, error);
+    console.error(`Error adding rating for user ID ${userId}, recipe ID ${recipeId}:`, error);
     throw error;
   }
 };
 
 module.exports = { getRecommendations, addRating };
+
