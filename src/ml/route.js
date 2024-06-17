@@ -17,5 +17,10 @@ module.exports = [
     options: {
       pre: [{ method: verifyToken }]
     }
+  },
+  {
+    method: 'GET',
+    path: '/rating',
+    handler: handler.getAverageRatingsHandler,
   }
 ];

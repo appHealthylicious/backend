@@ -154,4 +154,45 @@ const addRating = async (userId, recipeId, rating) => {
   }
 };
 
-module.exports = { getRecommendations, addRating };
+const getAverageRatings = async () => {
+  try {
+    const ratingsSnapshot = await firebaseAdmin.database().ref('users').once('value');
+    const users = ratingsSnapshot.val() || {};
+
+    if (Object.keys(users).length === 0) {
+      console.log("No ratings data available.");
+      return [];
+    }
+
+    const recipeStats = {};
+    Object.keys(users).forEach(userId => {
+      const userRatings = users[userId].ratings || {};
+      Object.keys(userRatings).forEach(recipeId => {
+        if (!recipeStats[recipeId]) {
+          recipeStats[recipeId] = { sum: 0, count: 0 };
+        }
+        recipeStats[recipeId].sum += userRatings[recipeId];
+        recipeStats[recipeId].count += 1;
+      });
+    });
+
+    const averageRatings = Object.keys(recipeStats)
+      .map(recipeId => {
+        const { sum, count } = recipeStats[recipeId];
+        const mean_rating = sum / count;
+        return {
+          recipeId,
+          mean_rating,
+          rating_count: count
+        };
+      })
+      .sort((a, b) => b.mean_rating - a.mean_rating);
+
+    return averageRatings;
+  } catch (error) {
+    console.error('Error getting average ratings:', error);
+    throw error;
+  }
+};
+
+module.exports = { getRecommendations, addRating, getAverageRatings };
