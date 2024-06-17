@@ -3,7 +3,7 @@ const fs = require('fs');
 const csv = require('csv-parser');
 const natural = require('natural');
 const cosineSimilarity = require('compute-cosine-similarity');
-const firebaseAdmin = require('../utils/firebase'); // Import firebaseAdmin from Firebase initialization
+const firebaseAdmin = require('../utils/firebase');
 
 const loadCSV = (filePath) => {
   return new Promise((resolve, reject) => {
@@ -17,16 +17,23 @@ const loadCSV = (filePath) => {
 };
 
 const getPopularRecipes = async (recipes) => {
-  const ratingsSnapshot = await firebaseAdmin.database().ref('ratings').once('value');
-  const ratings = ratingsSnapshot.val() || {};
+  console.log("Fetching popular recipes...");
+  const ratingsSnapshot = await firebaseAdmin.database().ref('users').once('value');
+  const users = ratingsSnapshot.val() || {};
+
+  if (Object.keys(users).length === 0) {
+    console.log("No users data available.");
+    return [];
+  }
 
   const recipeStats = {};
-  Object.keys(ratings).forEach(userId => {
-    Object.keys(ratings[userId]).forEach(recipeId => {
+  Object.keys(users).forEach(userId => {
+    const userRatings = users[userId].ratings || {};
+    Object.keys(userRatings).forEach(recipeId => {
       if (!recipeStats[recipeId]) {
         recipeStats[recipeId] = { sum: 0, count: 0 };
       }
-      recipeStats[recipeId].sum += ratings[userId][recipeId];
+      recipeStats[recipeId].sum += userRatings[recipeId];
       recipeStats[recipeId].count += 1;
     });
   });
@@ -35,22 +42,18 @@ const getPopularRecipes = async (recipes) => {
     .map(recipeId => {
       const { sum, count } = recipeStats[recipeId];
       const mean_rating = sum / count;
+      const recipe = recipes.find(r => r.recipeId === recipeId) || {};
       return {
         recipeId,
         mean_rating,
         rating_count: count,
-        ...recipes.find(recipe => recipe.recipeId === recipeId)
+        title: recipe.Title || 'Unknown Title'
       };
     })
     .sort((a, b) => b.mean_rating - a.mean_rating)
     .slice(0, 10);
 
-  return popularRecipes.map(recipe => ({
-    recipeId: recipe.recipeId,
-    title: recipe.Title,
-    mean_rating: recipe.mean_rating,
-    rating_count: recipe.rating_count
-  }));
+  return popularRecipes;
 };
 
 const getRecommendations = async (userId) => {
@@ -152,4 +155,3 @@ const addRating = async (userId, recipeId, rating) => {
 };
 
 module.exports = { getRecommendations, addRating };
-
