@@ -5,7 +5,7 @@ const handler = require('./handler');
 module.exports = [
   {
     method: 'POST',
-    path: '/generate/recommendations',
+    path: '/generate',
     handler: handler.generateRecommendationsHandler,
   }
 ];
