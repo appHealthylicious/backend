@@ -9,21 +9,31 @@ from nltk.tokenize import RegexpTokenizer
 import spacy
 from sklearn.decomposition import NMF
 from sklearn.metrics import pairwise_distances
+import joblib
 
-# Define the base directory
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# Load data
-recipes_path = os.path.join(BASE_DIR, '../../models/recipes_cleaned_ids.csv')
-ingredients_path = os.path.join(BASE_DIR, '../../models/just_ingredients.csv')
-
-df = pd.read_csv(recipes_path)
-df1 = pd.read_csv(ingredients_path)
 
 nlp = spacy.load("en_core_web_sm")
 
 def commatokenizer(text):
     return text.split(', ')
+
+# Define the base directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Load precomputed data
+vectorizer = joblib.load(os.path.join(BASE_DIR, '../../genmodels/vectorizer.joblib'))
+nmf_model = joblib.load(os.path.join(BASE_DIR, '../../genmodels/nmf_model.joblib'))
+doc_topic = joblib.load(os.path.join(BASE_DIR, '../../genmodels/doc_topic.joblib'))
+recipes_df = joblib.load(os.path.join(BASE_DIR, '../../genmodels/recipes_df.joblib'))
+
+# Define the key ingredients weights
+key_ingredients_weights = {
+    'beef': 10,
+    'chicken': 10,
+    'shrimp': 10,
+    'crab': 10,
+    'venison': 10,
+}
 
 def get_nouns(text):
     tokens = RegexpTokenizer(r'\w+').tokenize(text)
@@ -42,60 +52,35 @@ def mytokenizer(combinedlist):
                 bigramlist.append(' '.join((bi[0], bi[1])))
     return ', '.join(bigramlist + nounlist)
 
-def process_ingredients(row):
-    nouns = get_nouns(row)
-    combined = [row, nouns]
-    return mytokenizer(combined)
-
-df1['TokenizedIngredients'] = df1['IngredientsRemovedAdj'].apply(process_ingredients)
-
 def user_tokenize(ingreds):
     nouns = get_nouns(ingreds)
     ingredscombined = [ingreds, nouns]
     ingredstokenized = mytokenizer(ingredscombined)
     return ingredstokenized
 
-vectorizer = TfidfVectorizer(tokenizer=commatokenizer, stop_words='english', min_df=7, max_df=0.4, token_pattern=None)
-docs = df1['TokenizedIngredients']
-doc_word = vectorizer.fit_transform(docs)
-
-nmf_model = NMF(20, random_state=10, max_iter=1000)
-doc_topic = nmf_model.fit_transform(doc_word)
-topic_word = nmf_model.components_
-
-key_ingredients_weights = {
-    'beef': 10,
-    'chicken': 10,
-    'shrimp': 10,
-    'crab': 10,
-    'venison': 10,
-    # Add more key ingredients and their specific weights
-}
-
-def generate_recommendations(useringreds):
-    usertokens = user_tokenize(useringreds)
+def get_recommendations(user_ingredients):
+    usertokens = user_tokenize(user_ingredients)
     user_vec = vectorizer.transform([usertokens])
 
+    # Adjust weights for key ingredients
     feature_names = vectorizer.get_feature_names_out()
     for ingredient, weight in key_ingredients_weights.items():
         if ingredient in usertokens:
             index = feature_names.tolist().index(ingredient)
             user_vec[0, index] *= weight
 
+    # Transform user vector into topic space
     topic_vec = nmf_model.transform(user_vec)
-    indices = pairwise_distances(topic_vec, doc_topic, metric='cosine').argsort().ravel()
 
-    recommendations = []
-    for index in indices[:5]:
-        recommendations.append({
-            "title": df.iloc[index].Title,
-            "ingredients": df.iloc[index]["All Ingredients"],
-            "image": df.iloc[index].Image
-        })
+    # Compute similarity and get recommendations
+    indices = pairwise_distances(topic_vec, doc_topic, metric='cosine').argsort().ravel()
+    recommendations = [{"title": recipes_df.iloc[index].Title, 
+    "ingredients": recipes_df.iloc[index]["All Ingredients"], 
+    "image":recipes_df.iloc[index].Image} for index in indices[:5]]
 
     return recommendations
 
 if __name__ == "__main__":
-    user_input = sys.argv[1]
-    recommendations = generate_recommendations(user_input)
+    ingredients = sys.argv[1]
+    recommendations = get_recommendations(ingredients)
     print(json.dumps(recommendations))
