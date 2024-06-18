@@ -1,9 +1,7 @@
-// src/generate/index.js
-
 const routes = require('./route');
 
 module.exports = {
-  name: 'generate',
+  name: 'generateBeta',
   register: async (server, options) => {
     server.route(routes);
   },
