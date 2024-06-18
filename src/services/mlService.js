@@ -47,7 +47,8 @@ const getPopularRecipes = async (recipes) => {
         recipeId,
         mean_rating,
         rating_count: count,
-        title: recipe.Title || 'Unknown Title'
+        title: recipe.Title || 'Unknown Title',
+        image: recipe.Image
       };
     })
     .sort((a, b) => b.mean_rating - a.mean_rating)
@@ -58,7 +59,7 @@ const getPopularRecipes = async (recipes) => {
 
 const getRecommendations = async (userId) => {
   try {
-    const recipesPath = path.join(__dirname, '../../models/recipes_dataset.csv');
+    const recipesPath = path.join(__dirname, '../../models/recipes_cleaned_ids.csv');
     const recipes = await loadCSV(recipesPath);
 
     const userRef = firebaseAdmin.database().ref(`users/${userId}`);
@@ -123,7 +124,8 @@ const getRecommendations = async (userId) => {
         return {
           recipeId: recipe.recipeId,
           title: recipe.Title,
-          similarity: similarities[index]
+          similarity: similarities[index],
+          image: recipe.Image
         };
       })
       .filter(recipe => {
