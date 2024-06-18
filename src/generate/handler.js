@@ -1,4 +1,4 @@
-// src/generateBeta/handler.js
+// src/generate/handler.js
 const { generateRecommendations } = require('../services/generateService');
 
 const generateRecommendationHandler = async (request, h) => {

@@ -1,7 +1,7 @@
 const routes = require('./route');
 
 module.exports = {
-  name: 'generateBeta',
+  name: 'generate',
   register: async (server, options) => {
     server.route(routes);
   },
