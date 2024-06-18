@@ -13,6 +13,8 @@
   "license": "ISC",
   "dependencies": {
     "@hapi/hapi": "^21.3.9",
+    "@tensorflow/tfjs": "^4.20.0",
+    "@tensorflow/tfjs-node": "3.1.0",
     "axios": "^1.7.2",
     "babel-runtime": "^6.26.0",
     "compute-cosine-similarity": "^1.1.0",
@@ -29,6 +31,7 @@
     "ml-matrix": "^6.11.1",
     "mokolo": "^0.0.2",
     "natural": "^7.0.6",
+    "node-fetch": "^3.3.2",
     "nodemailer": "^6.9.13",
     "numpy": "^0.0.1",
     "pandas": "^0.0.3",
