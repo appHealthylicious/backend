@@ -60,7 +60,8 @@ const generateRecommendations = async (userId, ingredients) => {
       recipeId: recipe.recipeId,
       title: recipe.Title,
       ingredients: recipe.Ingredients,
-      similarity: recipe.similarity
+      similarity: recipe.similarity,
+      image: recipe.Image
     }));
   } catch (error) {
     console.error(`Error in generateRecommendations for user ID ${userId}:`, error);
