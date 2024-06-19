@@ -40,7 +40,7 @@ EMAIL_PASS= <YOUR_PASSWORD>
 	"auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
 	"client_x509_cert_url": "<YOUR_CLIENT_X509_CERT_URL>",
 	"universe_domain": "googleapis.com"
-	}
+}
 ```
 
 ## Features
