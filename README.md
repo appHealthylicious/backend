@@ -1,3 +1,4 @@
+
 ![Healthylicious](https://storage.googleapis.com/healthylicious-assets/Healthylicious%20Header.png "Healthylicious Logo")
 ## Healthylicious - Backend
 Healthylicious is a mobile application designed to promote healthier eating habits by providing personalized meal recommendations based on users' dietary preferences and available ingredients. Whether you are looking to lose weight, manage a health condition, or simply eat more nutritious foods, Healthylicious is your go-to companion for a healthier lifestyle.
@@ -74,9 +75,9 @@ EMAIL_PASS= <YOUR_PASSWORD>
 
 ### POST /register
 **Request**
-Method: POST
-Endpoint: /register
-Body parameters:
+- Method: POST
+- Endpoint: /register
+- Body parameters:
 ```json
 {
 	"email": "<your_email>",
@@ -86,9 +87,9 @@ Body parameters:
 
 ### POST /login
 **Request**
-Method: POST
-Endpoint: /login
-Body parameters:
+- Method: POST
+- Endpoint: /login
+- Body parameters:
 ```json
 {
 	"email": "<your_email>",
@@ -98,9 +99,9 @@ Body parameters:
 
 ### POST /request-reset-password
 **Request**
-Method: POST
-Endpoint: /request-reset-password
-Body parameters:
+- Method: POST
+- Endpoint: /request-reset-password
+- Body parameters:
 ```json
 {
 	"email": "<your_email>"
@@ -109,10 +110,10 @@ Body parameters:
 
 ### POST /user/profile
 **Request**
-Method: POST
-Endpoint: /user/profile
-Header : Authorization: Bearer "token"
-Body parameters:
+- Method: POST
+- Endpoint: /user/profile
+- Header : Authorization: Bearer "token"
+- Body parameters:
 ```json
 {
 	"username": "Name",
@@ -123,10 +124,10 @@ Body parameters:
 ```
 
 ### PUT /user/profile
-Method: PUT
-Endpoint: /user/profile
-Header : Authorization: Bearer "token"
-Body parameters: 
+- Method: PUT
+- Endpoint: /user/profile
+- Header : Authorization: Bearer "token"
+- Body parameters: 
 ```json
 {
 	"username": "New Name",
@@ -138,64 +139,64 @@ Body parameters:
 
 
 ### GET /user/profile
-Method: GET
-Endpoint: /user/profile{uid}
-Header : Authorization: Bearer "token"
-Body parameters: -
+- Method: GET
+- Endpoint: /user/profile{uid}
+- Header : Authorization: Bearer "token"
+- Body parameters: -
 
 ### POST /user/dislikes
-Method: POST
-Endpoint: /user/dislikes
-Header : Authorization: Bearer "token"
-Body parameters: 
+- Method: POST
+- Endpoint: /user/dislikes
+- Header : Authorization: Bearer "token"
+- Body parameters: 
 ```json
 ["beef","corn","bacon","potato,crab"]
 ```
 ### GET /user/dislikes
-Method: GET
-Endpoint: /user/dislikes
-Header : Authorization: Bearer "token"
-Body parameters:  -
+- Method: GET
+- Endpoint: /user/dislikes
+- Header : Authorization: Bearer "token"
+- Body parameters:  -
 
 ### GET /ingredients
-Method: Get
-Endpoint: /ingredients
-Body parameters: -
+- Method: GET
+- Endpoint: /ingredients
+- Body parameters: -
 
 ### GET /ingredients/search
-Method: Get
-Endpoint: /ingredients/search
-Body parameters: 
-- Key : query
-- Value : chili (your ingredient search)
+- Method: GET
+- Endpoint: /ingredients/search
+- Body parameters: 
+-- Key : query
+-- Value : chili (your ingredient search)
 
 ### GET /recipes
-Method: GET
-Endpoint: /ingredients
-Body parameters: -
+- Method: GET
+- Endpoint: /ingredients
+- Body parameters: -
 
 ### GET /recipes/search
-Method: GET
-Endpoint: /ingredients/search
-Body parameters: 
-- Key : query
-- Value : chili (your recipes key search)
+- Method: GET
+- Endpoint: /ingredients/search
+- Body parameters: 
+-- Key : query
+-- Value : chili (your recipes key search)
 
 ### GET /recipes/search
-Method: GET
-Endpoint: /ingredients/{title}
-Body parameters: -
+- Method: GET
+- Endpoint: /ingredients/{title}
+- Body parameters: -
 
 ### GET /recommendations
-Method: GET
-Endpoint: /recommendations
-Body parameters: -
+- Method: GET
+- Endpoint: /recommendations
+- Body parameters: -
 
 ###  POST /rate
-Method: POST
-Endpoint: /rate
-Header : Authorization: Bearer "token"
-Body parameters: 
+- Method: POST
+- Endpoint: /rate
+- Header : Authorization: Bearer "token"
+- Body parameters: 
 ```json
 {
 	"recipeId": "15",
@@ -204,21 +205,21 @@ Body parameters:
 ```
 
 ### GET /rate/recommendations
-Method: GET
-Endpoint: /rate/recommendations
-Header : Authorization: Bearer "token"
-Body parameters: -
+- Method: GET
+- Endpoint: /rate/recommendations
+- Header : Authorization: Bearer "token"
+- Body parameters: -
 
 ### GET /rating
-Method: GET
-Endpoint: /rating
-Body parameters: -
+- Method: GET
+- Endpoint: /rating
+- Body parameters: -
 
 ### POST /generate
-Method: POST
-Endpoint: /generate
-Header : Authorization: Bearer "token"
-Body parameters: 
+- Method: POST
+- Endpoint: /generate
+- Header : Authorization: Bearer "token"
+- Body parameters: 
 ```json
 {
 	"ingredients": "beef, butter, salt"
