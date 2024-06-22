@@ -33,7 +33,7 @@ const getPopularRecipes = async (recipes) => {
       if (!recipeStats[recipeId]) {
         recipeStats[recipeId] = { sum: 0, count: 0 };
       }
-      recipeStats[recipeId].sum += userRatings[recipeId];
+      recipeStats[recipeId].sum += Number(userRatings[recipeId]);
       recipeStats[recipeId].count += 1;
     });
   });
@@ -148,7 +148,7 @@ const getRecommendations = async (userId) => {
 const addRating = async (userId, recipeId, rating) => {
   try {
     const ratingRef = firebaseAdmin.database().ref(`users/${userId}/ratings/${recipeId}`);
-    await ratingRef.set(rating);
+    await ratingRef.set(Number(rating));  // Ensure the rating is stored as a number
     console.log(`Rating added for user ID ${userId}, recipe ID ${recipeId}, rating ${rating}`);
   } catch (error) {
     console.error(`Error adding rating for user ID ${userId}, recipe ID ${recipeId}:`, error);
@@ -173,7 +173,7 @@ const getAverageRatings = async () => {
         if (!recipeStats[recipeId]) {
           recipeStats[recipeId] = { sum: 0, count: 0 };
         }
-        recipeStats[recipeId].sum += userRatings[recipeId];
+        recipeStats[recipeId].sum += Number(userRatings[recipeId]);
         recipeStats[recipeId].count += 1;
       });
     });
